@@ -13,13 +13,16 @@ class TimeInterval
     private $priority = 0; //0-infinity
     private $isExist;
 
-    public function __construct(DateTime $beginTime, DateTime $endTime, $priority)
+    public function __construct(TimePoint $beginTime, TimePoint $endTime, $priority)
     {
         $this->setIntervalBounds($beginTime, $endTime);
         $this->setPriority($priority);
+        //ошибочное
+        //$this->beginTime = new TimePoint(0, 0);
+        //$this->endTime = new TimePoint(0, 0);
     }
 
-    public function setIntervalBounds(DateTime $beginTime, DateTime $endTime)
+    public function setIntervalBounds(TimePoint $beginTime, TimePoint $endTime)
     {
         $this->changeEndTime($endTime);
         $this->changeBeginTime($beginTime);
@@ -27,14 +30,14 @@ class TimeInterval
 
     //устанавливает время начала промежутка с проверкой начало < конец
     //возвращает false и устанавливает в false isExist, если время начала и конца в итоге совпадают
-    public function changeBeginTime(DateTime $beginTime)
+    public function changeBeginTime(TimePoint $beginTime)
     {
-        if (!($beginTime instanceof DateTime))
+        if (!($beginTime instanceof TimePoint))
             return false;
         else {
             if ($beginTime < $this->getEndTime()) {
                 $this->beginTime = $beginTime;
-                $this->isExist = true;
+                $this->isExist = $this->beginTime != $this->endTime;
                 return true;
             } else {
                 $this->isExist = false;
@@ -46,14 +49,14 @@ class TimeInterval
 
     //устанавливает время начала промежутка с проверкой конец > начало
     //возвращает false и устанавливает в false isExist, если время начала и конца в итоге совпадают
-    public function changeEndTime(DateTime $endTime)
+    public function changeEndTime(TimePoint $endTime)
     {
-        if (!($endTime instanceof DateTime))
+        if (!($endTime instanceof TimePoint))
             return false;
         else {
             if ($endTime > $this->getBeginTime()) {
                 $this->endTime = $endTime;
-                $this->isExist = true;
+                $this->isExist = $this->beginTime != $this->endTime;
                 return true;
             } else {
                 $this->endTime = $this->getBeginTime();
@@ -86,5 +89,15 @@ class TimeInterval
     public function getPriority()
     {
         return $this->priority;
+    }
+
+    public function ifExist()
+    {
+        return $this->isExist;
+    }
+
+    public function __toString()
+    {
+        return $this->getBeginTime() . '-' . $this->getEndTime() . ' Priotity:(' . $this->getPriority() . ') Exists:' . $this->isExist;
     }
 }
